@@ -17,7 +17,10 @@
 
 #### 学习说明
 
-`
+
+    
+```
+
 第1章 导学
 
     1-1 课程简介
@@ -39,6 +42,7 @@
             其它辅助 npm git 
 
         课程安排 
+
             环境搭建
             基础知识
             实战开发
@@ -80,9 +84,9 @@
         webpack+React开发环境
         windows 最好装一个xshell 模拟linux命令的工具
 
-        npm run dev 启动服务
-        npm run build 打包 
-        http-server -p 8081 进入目录以后监听端口8081 本地启动服务
+            npm run dev 启动服务
+            npm run build 打包 
+            http-server -p 8081 进入目录以后监听端口8081 本地启动服务
 
         vendeor.js 是第三方库的js
         app.js 是自己手写的js
@@ -116,6 +120,7 @@
 
 
     1.8介绍webpack config.js(2)
+
         module.exports{}
         entry 输入
         output  输出
@@ -143,6 +148,7 @@
         jsx 是react专有的文件格式
 
     1.9介绍webpack.production.config.js
+
         entry输入  //第三方依赖
             app
             vendor 
@@ -168,7 +174,7 @@
                     __DEV__:JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev')))
                 })
 
-`
+```
 
 
 
@@ -178,7 +184,12 @@
 
 
 
-`   
+
+
+
+
+``` 
+
 第二章 React基础
 
     2-1 介绍jsx
@@ -313,9 +324,7 @@
             主要用于性能优化，React的性能优化也是一个很重要的话题
         componentDidUpdate
             组件更新了之后触发的时间，一般用于清空并更新数据，实际开始项目开发时 会经常用到
-
-`
-
+```
 
 
 
@@ -328,14 +337,15 @@
 
 
 
-`
-第三章 React
+
+```
+
+第三章 React优化方案和例子
 
     3-1 优化方案 
 
-        介绍两种方式
-        简单的todolist 
-        性能检测 安装react性能检测工具 npm i react-addons-perf --save 
+        介绍两种方式性能优化方式： 
+        (1)性能检测 安装react性能检测工具 npm i react-addons-perf --save 
         然后在 ./app/index.jsx中
         import Perf form 'react-addons-perf' 
         if(__DEV__){ //开发环境下面才执行
@@ -347,7 +357,7 @@
             Perf.stop()  停止检测
             Perf.printWasted() 每个组件的运行时间
 
-        PureRenderMixin 优化
+        (2)PureRenderMixin 优化
         React最基本的优化方式使用PureRenderMixin  安装工具 npm i react-addons-puree-render-mixin --save  然后在组件中引用使用
             
             import React from 'react'
@@ -365,24 +375,27 @@
 
     3-2 todo-list-demo 
 
-        
-
-
-
-
-`
 
 
 
 
 
+```
 
 
 
 
-`
-第四章 React
-4-1 跳转和参数
-4-2 介绍router-map配置
 
-`
+
+
+
+
+```
+    第四章 React
+
+    4-1 跳转和参数
+
+    4-2 介绍router-map配置
+
+```
+
