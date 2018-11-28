@@ -1,7 +1,8 @@
-# learnReact
+# 大众点评App
 
 #### 项目介绍
-学习react
+
+    仿照大众点评APP，以React框架为基础开发的一套WebApp
 
 #### 软件架构
 软件架构说明
