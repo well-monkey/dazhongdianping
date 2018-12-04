@@ -359,7 +359,7 @@
             Perf.printWasted() 每个组件的运行时间
 
         (2)PureRenderMixin 优化
-        React最基本的优化方式使用PureRenderMixin  安装工具 npm i react-addons-puree-render-mixin --save  然后在组件中引用使用
+        React最基本的优化方式使用PureRenderMixin  安装工具 npm i react-addons-pure-render-mixin --save  然后在组件中引用使用
             
             import React from 'react'
             import PureRenderMixin from 'react-addons-puree-render-mixin'
@@ -939,10 +939,40 @@
     
     7-2 准备工作-路由
 
+        routerMap.jsx
 
+            import React from 'react'
+            import { Router, Route, IndexRoute } from 'react-router'
+
+            import App from '../containers'
+            import Home from '../containers/Home'
+            import City from '../containers/City'
+            import User from '../containers/User'
+            import Search from '../containers/Search'
+            import Detail from '../containers/Detail'
+            import NotFound from '../containers/404'
+
+            // 如果是大型项目，router部分就需要做更加复杂的配置
+            // 参见 https://github.com/reactjs/react-router/tree/master/examples/huge-apps
+
+            class RouterMap extends React.Component {
+                render() {
+                    return (
+                        <Router history={this.props.history}>
+                            <Route path='/' component={App}>
+                                <IndexRoute component={Home}/>
+                                <Route path='/city' component={City}/>
+                                <Route path='/User' component={User}/>
+                                <Route path='/search/:type(/:keyword)' component={Search}/>
+                                <Route path='/detail/:id' component={Detail}/>
+                                <Route path='*' component={NotFound}/>
+                            </Route>
+                        </Router>
+                    )
+                }
+            }
         
-
-    7-3
+    7-3 Head组件
 
     7-4
 
