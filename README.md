@@ -601,6 +601,7 @@
 
 
 ```
+
 第五章 React Redux 
 
     5-1 简单demo
@@ -972,17 +973,185 @@
                 }
             }
         
-    7-3 Head组件
+    7-3 加载中展示
+        
+        // 加载中展示方式
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
 
-    7-4
+        class App extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+                this.state = {
+                    initDone: false 
+                }
+            }
+            componentDidMount(){
+                // this 指向问题
+                setTimeout(()=>{
+                    that.setState({
+                        initDone: true
+                    })
+                },1500)
+            }
+            render() {
+                return (
+                    <div>
 
-    7-5
+                        {this.state.initDone?this.props.children:<div>加载中……</div>}
+                    </div>
+                )
+            }
+        }
 
-    7-6
+        export default App
 
-    7-7
+    7-4 获取城市 
+        获取城市 => 然后获取城市后展示
 
-    7-8 
+        延伸 == 和 === 区别  
+        == 进行类型的转换  === 严格相等  在写程序的时候 建议使用 === 
+
+        util localStore.js 里面有相关方法  注意safari的无痕模式
+
+        单独建立config 文件夹  里面放入 export const CITYNAME  = 'USER_CURRENT_CITY_NAME' 单独处理
+
+        index.jsx 里面引入 然后获取
+
+            import LocalStore from '../util/localStore'
+            import { CITYNAME } from '../config/localStoreKey'
+            let cityName = LocalStore.getItem(CITYNAME)
+
+    7-5 城市信息存储到深圳 Redux
+
+        index.jsx 
+
+            import React from 'react'
+            import PureRenderMixin from 'react-addons-pure-render-mixin'
+            import LocalStore from '../util/localStore'
+            import { CITYNAME } from '../config/localStoreKey'
+            import { bindActionCreators } from 'redux'
+            import { connect } from 'react-redux'
+            import * as userInfoActionsForOtherFile from '../actions/userinfo'
+            class App extends React.Component {
+                constructor(props, context) {
+                    super(props, context);
+                    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+                    this.state = {
+                        initDone: false 
+                    }
+                }
+                componentDidMount(){
+                    //从localstorage里面获取城市
+                    let cityName = LocalStore.getItem(CITYNAME)
+                    if(cityName == null) {
+                        cityName = '北京'
+                    }
+                    // 将城市信息存储到 Redux 中
+                    this.props.userInfoActions.update({
+                        cityName:cityName
+                    })
+                    setTimeout(()=>{ // 箭头函数 解决this问题
+                        this.setState({
+                            initDone: true
+                        })
+                    },1500)
+                }
+                render() {
+                    return (
+                        <div>
+                            {this.state.initDone?this.props.children:<div>加载中……</div>}
+                        </div>
+                    )
+                }
+            }
+
+            function mapStateToProps(state) {
+                return{
+
+                }
+            }
+
+            function mapDispatchToProps(dispatch) {
+                return{
+                userInfoActions: bindActionCreators(userInfoActionsForOtherFile,dispatch)
+                }
+            }
+
+            export default connect(
+                mapStateToProps,
+                mapDispatchToProps
+            )(App)
+
+        userinfo.js // actions 里面的
+
+            import * as actionTypes from '../constants/userinfo'
+
+            export function update(data) {
+                return {
+                    type: actionTypes.USERINFO_UPDATE,
+                    data
+                }
+            }
+
+        userinfor.js // constants里面的
+
+            export const USERINFO_UPDATE = 'USERINFO_UPDATE'
+
+
+    7-6 Head布局
+
+        木偶组件 => 涉及不到后端数据交互的
+        智能组件 => 处理数据
+        搭建Head组件
+
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import './style.less'
+        class HomeHeader extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            }
+            render() {
+                return (
+                    <div className="clear-fix">
+                        <div className="float-left">
+                            深圳
+                            <i className="icon-angle-down"></i>
+                        </div>
+                    
+                        <div className="float-right">
+                            <i className="icon-user"></i>
+                        </div>
+                        <div>
+                            <i className="icon-search"></i>
+                            <input type="text"/>
+                        </div>
+                    </div>
+                )
+            }
+        }
+
+        module.exports = HomeHeader
+
+        
+
+    7-7 Header 图标
+
+        iconmoon
+        然后webpack中已经设置 
+         static中css font.css
+        目录下面创建fonts文件 放入文件
+        然后在入口文件index.jsx中引入
+       
+
+    7-8 cityName显示
+
+        传入    <HomeHeader cityName='西安'/>
+        接收    <span>{this.props.cityName}</span>
+
 
     7-9
 
