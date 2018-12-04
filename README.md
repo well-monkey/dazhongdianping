@@ -1153,7 +1153,15 @@
         接收    <span>{this.props.cityName}</span>
 
 
-    7-9
+    7-9 录播图
+
+        category文件夹
+
+            新建category.js 文件和style.less文件
+            小技巧 在一个文件下 如果想同时修改很多变量名字 command+D
+            在home页面中引用
+            录播图使用react-swipe组件
+            npm install swipe-js-iso whatwg-fetch --save
 
     7-10
 
