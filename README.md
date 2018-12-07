@@ -1153,30 +1153,155 @@
         接收    <span>{this.props.cityName}</span>
 
 
-    7-9 录播图
+    7-9 轮播图
 
         category文件夹
 
             新建category.js 文件和style.less文件
             小技巧 在一个文件下 如果想同时修改很多变量名字 command+D
+            
             在home页面中引用
-            录播图使用react-swipe组件
+
+            轮播图使用react-swipe组件
             npm install swipe-js-iso whatwg-fetch --save
+            引入
+            import ReactSwipe from 'react-swipe'    
+            render() {
+                let reactSwipeEl;
+                let opt = {
+                    auto ：2000
+                }
+                return (
+                    <div>
+                        <ReactSwipe
+                            className="carousel"
+                            swipeOptions={{ continuous: opt }}
+                            ref={el => (reactSwipeEl = el)}
+                        >
+                            <div>PANE 1</div>
+                            <div>PANE 2</div>
+                            <div>PANE 3</div>
+                        </ReactSwipe>
+                    </div>
+                )
+            }
 
-    7-10
 
-    7-11
+    7-10 展示索引值
+
+        // 设置变量默认值为第一页  回调函数将当前的轮播值等于默认值  this处理 .bind(this) 
+        constructor(props, context) {
+            super(props, context);
+            this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            this.state = {
+                index: 0
+            }
+        }
+        render() {
+            let reactSwipeEl;
+            let opt = {
+                auto: 2000,
+                callback:function(index){
+                    this.setState({index:index})
+                }.bind(this)
+            }
+            return (
+                <div>
+                    <ReactSwipe
+                        className="carousel"
+                        swipeOptions={opt}
+                        ref={el => (reactSwipeEl = el)}
+                    >
+                        <div>PANE 1</div>
+                        <div>PANE 2</div>
+                        <div>PANE 3</div>
+                    </ReactSwipe>
+                    <div>
+                        {this.state.index}
+                    </div>
+                </div>
+            )
+        }
+
+    7-11 索引值的变化
+
 
 ```
+
+
+
+
 ```
-    7-12
+    7-12 超值特惠  广告
 
-    7-13
+        /api/homead 请求广告接口 返回广告的数据
 
-    7-14
+        fetch-home-home.js
+        mock.js 里面加入
+
+            // 首页 —— 广告（超值特惠）
+            var homeAdData = require('./home/ad.js')
+            router.get('/api/homead', function *(next) {
+                this.body = homeAdData
+            });
+
+            //这里面ad.js是引入的 所以需要列举出来
+            ad.js是一个输出的数组 module.exports = []
+
+    7-13  超值特惠 智能组件接收数据
+
+        containers-Home-subpage 新建Ad.jsx 
+        // 引入home.js的数据 默认给state一个值  componentDidMount中请求数据 如果有返回数据并且有数据 将本地的state值填充 setState 这个Ad.jsx中 是请求参数的 组件 所以这个是智能组件
+
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import { getAdData } from '../../../fetch/home/home.js'
+
+        class Ad extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+                this.state = {
+                    data:[]
+                }
+            }
+            render() {
+                return (
+                    <div>
+                        {this.state.data.length}
+                    </div>
+                )
+            }
+            componentDidMount(){
+                const result = getAdData()
+                result.then((res) => {
+                    return res.json()
+                }).then((json)=>{
+                    const data = json
+                    if(data.length){
+                        this.setState({
+                            data:data
+                        })
+                    }
+                })
+            }
+        }
+        export default Ad
+   
+    7-14  超值特惠 木偶组件 展示数据 Ad.js引入数据
+
+        import HomeAd from '../../../components/HomeAd/index'
+        三目判断   
+           <div>
+                {
+                    this.state.data.length
+                    ? <HomeAd data={this.state.data}/>
+                    : <div>{/* 加载中... */}</div>
+                }
+            </div>
+            
 
     7-15
-
     7-16
 
     7-17
