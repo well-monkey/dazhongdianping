@@ -1,11 +1,11 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import HomeHeader from '../../components/HomeHeader/index'
-import Category from '../../components/category/index'
-import Ad from './subpage/AD'
-import List from './subpage/List'
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
+import HomeHeader from '../../components/HomeHeader'
+import Category from '../../components/Category'
+import Ad from './subpage/Ad'
+import List from './subpage/List'
 
 class Home extends React.Component {
     constructor(props, context) {
@@ -16,27 +16,28 @@ class Home extends React.Component {
         return (
             <div>
                 <HomeHeader cityName={this.props.userinfo.cityName}/>
-                <Category />
-                <div style={{paddingTop:'15px'}}>
-                    <Ad / >
-                    <List cityName={this.props.userinfo.cityName}/>
-                </div>
+                <Category/>
+                <div style={{height: '15px'}}>{/* 分割线 */}</div>
+                <Ad/>
+                <List cityName={this.props.userinfo.cityName}/>
             </div>
         )
     }
 }
 
+// -------------------redux react 绑定--------------------
+
 function mapStateToProps(state) {
-    return{
-        userinfo:state.userinfo
+    return {
+        userinfo: state.userinfo
     }
 }
+
 function mapDispatchToProps(dispatch) {
-    return{
+    return {
     }
 }
 export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(Home)
-

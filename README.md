@@ -1232,6 +1232,9 @@
 
 
 ```
+
+第七章下  正式开发仿照大众点评
+
     7-12 超值特惠  广告
 
         /api/homead 请求广告接口 返回广告的数据
@@ -1298,26 +1301,372 @@
                     ? <HomeAd data={this.state.data}/>
                     : <div>{/* 加载中... */}</div>
                 }
-            </div>
-            
+            </div>    
 
-    7-15
-    7-16
+    7-15 mock数据
 
-    7-17
+        containers-home-subpage  List.jsx
 
-    7-18
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
 
-    7-19
+        class List extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            }
+            render() {
+                return (
+                    <div>
+                        list subpage
+                    </div>
+                )
+            }
+        }
+        export default List
 
-    7-20
 
-    7-21
+        mock文件夹里面 server.js
+        // 首页 —— 推荐列表（猜你喜欢）
+        var homeListData = require('./home/list.js')
+        router.get('/api/homelist/:city/:page', function *(next) {
+            // 参数
+            const params = this.params
+            const paramsCity = params.city
+            const paramsPage = params.page
 
-    7-22
+            console.log('当前城市：' + paramsCity)
+            console.log('当前页数：' + paramsPage)
+
+            this.body = homeListData
+        });
+
+
+
+    7-16 获取首页列表数据并展示 List.jsx  
+
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import { getListData } from '../../../fetch/home/home'
+        import ListCompoent from '../../../components/List'
+        import LoadMore from '../../../components/LoadMore'
+
+        import './style.less'  // 引入style.less 展示
+
+        class List extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+                this.state = {
+                    data: [],
+                    hasMore: false,
+                    isLoadingMore: false,
+                    page: 0
+                }
+            }
+            render() {
+                return (
+                    <div>
+                        <h2 className="home-list-title">猜你喜欢</h2>
+                        {
+                            this.state.data.length
+                            ? <ListCompoent data={this.state.data}/>
+                            : <div>{/* 加载中... */}</div>
+                        }
+                        {
+                            this.state.hasMore
+                            ? <LoadMore isLoadingMore={this.state.isLoadingMore} loadMoreFn={this.loadMoreData.bind(this)}/>
+                            : ''
+                        }
+                    </div>
+                )
+            }
+            componentDidMount() {
+                // 获取首页数据
+                this.loadFirstPageData()
+            }
+            // 获取首页数据
+            loadFirstPageData() {
+                const cityName = this.props.cityName 
+                const result = getListData(cityName, 0) // 刚开始请求数据为0
+                this.resultHandle(result) // 单独函数 传入请求
+            }
+            // 加载更多数据
+            loadMoreData() {
+                // 记录状态
+                this.setState({
+                    isLoadingMore: true
+                })
+
+                const cityName = this.props.cityName
+                const page = this.state.page
+                const result = getListData(cityName, page)
+                this.resultHandle(result)
+
+                // 增加 page 技术
+                this.setState({
+                    page: page + 1,
+                    isLoadingMore: false
+                })
+            }
+            // 处理数据
+            resultHandle(result) {   // 
+                result.then(res => {
+                    return res.json()
+                }).then(json => {
+                    const hasMore = json.hasMore
+                    const data = json.data
+
+                    this.setState({
+                        hasMore: hasMore,
+                        // 注意，这里讲最新获取的数据，拼接到原数据之后，使用 concat 函数
+                        data: this.state.data.concat(data)
+                    })
+                }).catch(ex => {
+                    if (__DEV__) {
+                        console.error('首页”猜你喜欢“获取数据报错, ', ex.message)
+                    }
+                })
+            }
+        }
+
+        export default List
+
+    7-17 列表
+
+        图片 标题 描述 价格  销售量
+        components/List/Item/index.jsx  index.jsx
+        
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import './style.less'
+
+        class ListItem extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            }
+            render() {
+                const data = this.props.data
+                return (
+                    <div className="list-item clear-fix">
+                        <div className="item-img-container float-left">
+                            <img src={data.img} alt={data.title}/>
+                        </div>
+                        <div className="item-content">
+                            <div className="item-title-container clear-fix">
+                                <h3 className="float-left">{data.title}</h3>
+                                <span className="float-right">{data.distance}</span>
+                            </div>
+                            <p className="item-sub-title">
+                                {data.subTitle}
+                            </p>
+                            <div className="item-price-container clear-fix">
+                                <span className="price float-left">￥{data.price}</span>
+                                <span className="mumber float-right">已售{data.mumber}</span>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        }
+
+        export default ListItem
+
+
+        components/List/index.jsx   //引入Item组件单独处理
+
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import Item from './Item'
+        import './style.less'
+
+        class List extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            }
+            render() {
+                return (
+                    <div className="list-container">
+                        {this.props.data.map((item, index) => {
+                            return <Item key={index} data={item}/>
+                        })}
+                    </div>
+                )
+            }
+        }
+
+        export default List
+    
+    7-18 Item组件实现
+
+        搭建猜你喜欢的样式布局
+        注意效率问题
+        列表的搭建
+
+    7-19 加载更多的实现
+
+        首先应该准备3个状态
+        this.state={
+            data:[],      // 存储列表信息
+            hasMore:false // 记录当前状态下还有没有更多的数据可供加载
+            isLoadingMore:false, // 记录当前状态下，是加载中 还是点击加载更多
+            page:1
+        }
+
+        创建LoadMore组件
+
+        根绝this.state.hasMore 判断
+        如果有的话显示     组件 <LoadMore isLoadingMore={this.state.isLoadingMore} loadMoreFn={this.loadMoreData.bind(this)}/>
+        如果没有的话不显示
+
+        componentDidMount() {     // 获取首页数据
+            this.loadFirstPageData()
+        }
+        // 获取首页数据
+        loadFirstPageData() {
+            const cityName = this.props.cityName
+            const result = getListData(cityName, 0)
+            this.resultHandle(result)
+        }
+        // 加载更多数据
+        loadMoreData() {
+            // 记录状态
+            this.setState({
+                isLoadingMore: true
+            })
+            const cityName = this.props.cityName
+            const page = this.state.page
+            const result = getListData(cityName, page)
+            this.resultHandle(result)
+            // 增加 page 技术
+            this.setState({
+                page: page + 1,
+                isLoadingMore: false
+            })
+        }
+         // 处理数据
+        resultHandle(result) {
+            result.then(res => {
+                return res.json()
+            }).then(json => {
+                const hasMore = json.hasMore
+                const data = json.data
+                this.setState({
+                    hasMore: hasMore,
+                    // 注意，这里讲最新获取的数据，拼接到原数据之后，使用 concat 函数
+                    data: this.state.data.concat(data)
+                })
+            }).catch(ex => {
+                if (__DEV__) {
+                    console.error('首页”猜你喜欢“获取数据报错, ', ex.message)
+                }
+            })
+        }
+
+
+    7-20 LoadMore组件
+
+        component/LoadMore/ 下面新建index.jsx 和style.less
+        完善 List.jsx 的loadMoreData方法
+        
+        loadMoreData() {
+            // 记录状态 点击改变状态 变成加载中
+            this.setState({
+                isLoadingMore: true
+            })
+            const cityName = this.props.cityName
+            const page = this.state.page
+            const result = getListData(cityName, page)
+            this.resultHandle(result)
+            // 增加 page 技术
+            this.setState({
+                page: page + 1,
+                isLoadingMore: false
+            })
+        }
+
+        LoadMore组件
+
+            render() {
+                return (
+                    <div className="load-more" ref="wrapper">
+                        {
+                            this.props.isLoadingMore
+                            ? <span>加载中...</span>
+                            : <span onClick={this.loadMoreHandle.bind(this)}>加载更多</span>
+                        }
+                    </div>
+                )
+            }
+            loadMoreHandle() {
+                // 执行传输过来的
+                this.props.loadMoreFn();
+            }
+    
+
+    7-21 LoadMore自动叠加方式
+        
+        index.jsx
+
+        componentDidMount() {
+            // 使用滚动时自动加载更多
+            const loadMoreFn = this.props.loadMoreFn
+            const wrapper = this.refs.wrapper
+            let timeoutId
+            function callback() {
+                console.log(456)
+                const top = wrapper.getBoundingClientRect().top
+                const windowHeight = window.screen.height
+                if (top && top < windowHeight) {
+                    // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
+                    loadMoreFn()
+                }
+            }
+            window.addEventListener('scroll', function () {
+                if (this.props.isLoadingMore) {
+                    return
+                }
+                console.log(123)
+                if (timeoutId) {
+                    clearTimeout(timeoutId)
+                }
+                timeoutId = setTimeout(callback, 50)
+            }.bind(this), false);
+        }
+
+        // addEventListener 监听scroll事件 如果isLoadingMore有 说明正在加载 跳出
+        做一个截流 如果timeoutId有 清空定时器  如果没有的话 执行定时器
+        可以分别打印一下 可以发现只有在拉动页面的时候才会触发 打印456
+
+        const wrapper = this.refs.wrapper  // 拿到dom
+        const top = wrapper.getBoundingClientRect().top //距离顶部的距离
+        const windowHeight = window.screen.height  // 拿到window的高度
+        if (top && top < windowHeight) {
+            // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
+            loadMoreFn()
+        }
+        // 当有距离 而且距离小于屏幕高度   当加载更多漏出来 立马加载更多
 ```
 
 
+```
+
+第八章上 开发城市页面
+
+    8-1 路由页面
 
 
 
+    8-2 跳转链接
+
+
+
+
+    8-3-4-5
+
+
+    8-6
+
+```

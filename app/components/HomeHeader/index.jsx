@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link, hashHistory } from 'react-router'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 import './style.less'
@@ -12,8 +13,10 @@ class HomeHeader extends React.Component {
         return (
             <div id="home-header" className="clear-fix">
                 <div className="home-header-left float-left">
-                    <span>{this.props.cityName}</span>
-                    &nbsp;
+                    <Link to="/city">
+                        <span>{this.props.cityName}</span>
+                        &nbsp;
+                    </Link>
                     <i className="icon-angle-down"></i>
                 </div>
                 <div className="home-header-right float-right">
@@ -28,8 +31,9 @@ class HomeHeader extends React.Component {
             </div>
         )
     }
+    enterHandle(value) {
+        hashHistory.push('/search/all/' + encodeURIComponent(value))
+    }
 }
 
-// 使用 require.ensure 异步加载，还不支持 ES6 的 export 
-// export default NotFound
-module.exports = HomeHeader
+export default HomeHeader

@@ -17,7 +17,7 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                 {
+                {
                     this.state.initDone
                     ? this.props.children
                     : <div>正在加载...</div>
@@ -34,12 +34,15 @@ class App extends React.Component {
         this.props.userInfoActions.update({
             cityName: cityName
         })
+
         // 更改状态
         this.setState({
             initDone: true
         })
     }
 }
+
+// -------------------redux react 绑定--------------------
 
 function mapStateToProps(state) {
     return {
