@@ -1656,17 +1656,79 @@
 第八章上 开发城市页面
 
     8-1 路由页面
+        
+        HomeHeader里面的index.jsx文件 跳转方式
+        <Link to="/city">
+            <span>{this.props.cityName}</span>
+            &nbsp;
+        </Link>
+
+        点击城市 跳转到城市页面 
+        城市页面功能 1.显示当前城市 2.语序修改城市
+        两个功能需要Redux支持  可以在component里面先打印出两个页面的值 
+        city需要连接Redux 引入并应用
 
 
+        function mapStateToProps(state) {
+            return {
+                userinfo:state.userinfo
+            }
+        }
+
+        function mapDispatchToProps(dispatch) {
+            return {
+                userInfoActions: bindActionCreators(userInfoActionsFromOtherFile, dispatch),
+            }
+        }
+        export default connect(
+            mapStateToProps,
+            mapDispatchToProps
+        )(City)
 
     8-2 跳转链接
 
+        标题栏可以抽离出来做一个组件  新建component/Header/index.jsx style.less
 
+        做成React组件代码结构  然后在City/index.jsx中里面引用
 
+        import React from 'react'
+        import PureRenderMixin from 'react-addons-pure-render-mixin'
+        import { bindActionCreators } from 'redux'
+        import { connect } from 'react-redux'
+        import * as userInfoActionsFromOtherFile from '../../actions/userinfo' 
 
-    8-3-4-5
+        class Header extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            }
+            render() {
+                return (
+                    <div>
+                        <h1>Header</h1>
+                    </div>
+                )
+            }
+        }
+        export default Header
 
+    8-3-4-5 city页面的处理
+
+        Header页面需要做的两个功能
+        1.city页面做传值处理  {this.props.title}
+        2.返回    
+            <span onClck={this.clickHandle}>返回</span> 
+            clickHandle(){
+                window.history.back()
+            }
+        然后布局+样式 
+
+        当前城市的显示 单独做一个组件currentCity组件 直接显示 细分组件 为了应对以后的需求
+
+        
 
     8-6
+
+    
 
 ```
