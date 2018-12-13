@@ -1866,6 +1866,30 @@
 
         然后布局样式
 
+    然后关于这页面的数据 是采用接口请求的 如下
+
+        第一步编写SearchList组件 然后 引入相关组件
+        subpage/List.jsx  
+
+        引入 getSearchData 数据 fetch 页面中新建search.js 写接口
+
+    mock/search/list 为list模拟数据
+    server.js为 路由请求
+
+
+```
+
+```
+
+第十章 
+
+    10-1
+
+    10-2
+    10-3
+    10-4
+    10-5
+
 
 
 ```
