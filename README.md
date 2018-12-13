@@ -57,7 +57,7 @@
         讲授方式
 
             先基础，后实战
-            在讲解的同事引导思考，会抛出自己独特的观点
+            在讲解的同时引导思考，会抛出自己独特的观点
             一行一行写代码
             顺序观看
 
@@ -68,19 +68,7 @@
             学会如果从零搭建一个前端开发环境
 
 
-    1-2为何用文档代替PPT
-
-        方便查阅
-        方便回顾
-        培养开发人员的文档意识
-
-    1-3 导学3-项目演示效果
-
-    1-4 课程说明
-
-        多学多练
-
-    1-5 学习目的
+    1-2 学习目的
 
         webpack+React开发环境
         windows 最好装一个xshell 模拟linux命令的工具
@@ -1223,8 +1211,6 @@
             )
         }
 
-    7-11 索引值的变化
-
 
 ```
 
@@ -1723,12 +1709,163 @@
             }
         然后布局+样式 
 
-        当前城市的显示 单独做一个组件currentCity组件 直接显示 细分组件 为了应对以后的需求
+        当前城市的显示 单独做一个组件CurrentCity组件 直接显示 细分组件 为了应对以后的需求
+        热门城市列表 单租也做一个组件CityList城市固定写死
 
+        两个组件分别在components里面建立对应文件夹 然后引入各自的style.less 然后在City组件里面引入
+
+
+    8-6 城市的列表点击选择
+
+        首先样式布局，然后执行changeCity方法
+        changeCity方法首先在city页面里面 
+        
+        //更改程城市列表点击的时候获取点击的城市 如果没有城市则return 如果有
+        第一步修改Redux将点击的城市名称赋值到当前变量userinfo 值上面 
+        第二步执行Redux的更新方法 更新userinfo 然后修改localStore 引入相关的LocalStore和CITYNAME 进行本地存储的更改 
+        第三步修改完毕跳转首页
+        
+        将此方法传入到子组件中<CityList changeFn={this.changeCity.bind(this)} />
+    
+
+        changeCity(newCity){
+            console.log(newCity)
+            if(newCity === null ){
+                return 
+            }
+            // 修改Redux
+            const userinfo = this.props.userinfo
+            userinfo.cityName = newCity
+            this.props.userInfoActions.update(userinfo)
+
+            // 修改LocalStore
+            LocalStore.setItem(CITYNAME,newCity)
+
+            //跳转首页
+            hashHistory.push('/')
+        }
+
+
+```
+
+
+```
+
+第九章开发搜索结果页面
+
+    9-1 首页进入搜索页面
+        两种方式 输入框和icon
+
+        通过react-router引入Link 
+        <Link to="/search/jingdian"><li className="float-left jingdian">景点</li></Link>
+
+        需要注意的是 这种方式跳转到搜索结果页的路由是怎样的
         
 
-    8-6
 
-    
+
+    9-2 约束性和非约束性组件
+
+        <input type="text" defaultValue="a" ref="input">
+        this.refs.input 
+        console.log(input.value)
+
+        依赖DOM操作 不符合组件化的设计 也不易扩展
+        查询DOM消耗更多性能
+
+    约束性 
+        监控input的变化将值实时存到state中，直接从state中获取
+        Reavt或者Vue是一种基于数据驱动视图的设计方式，定好数据和视图的规则之后，只更改数据，不直接操作DOM
+
+
+
+        HomeHeader index.jsx
+
+        <input type="text" placeholder="请输入关键字"
+                        onChange={this.HandleChange.bind(this)}
+                        onKeyUp={this.KeyUpHandle.bind(this)}
+                        value={this.state.kwd}/>
+        KeyUpHandle(e){
+            if(e.keyCode !== 13){
+                return
+            }
+            hashHistory.push('/search/all'+ encodeURIComponent(this.state.kwd))
+        }
+        HandleChange(e){
+            this.setState({
+                kwd:e.target.value
+            })
+        }
+
+    9-3 抽离input
+
+        两个头部都要用到search组件 所以抽离
+        compoment 里面建立 SearchInput 组件 
+        searchinput
+
+        class SearchInput extends React.Component {
+            constructor(props, context) {
+                super(props, context);
+                this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+                this.state={
+                    value:''
+                }
+            }
+            render() {
+                return (
+                    <input type="text" placeholder="请输入关键字"
+                                    onChange={this.HandleChange.bind(this)}
+                                    onKeyUp={this.KeyUpHandle.bind(this)}
+                                    value={this.state.value}/>
+                )
+            }
+            componentDidMount(){
+                this.setState({
+                    value:this.props.value || ''
+                })
+            }
+            KeyUpHandle(e){
+                if(e.keyCode !== 13){
+                    return
+                }
+                this.props.enterHandle(e.target.value)
+            }
+            HandleChange(e){
+                this.setState({
+                    value:e.target.value
+                })
+            }
+        }
+
+
+    9-4 抽离input
+
+        <SearchInput value="abc" enterHandle={this.enterHandle.bind(this)} />
+        enterHandle(value) {
+            hashHistory.push('/search/all/' + encodeURIComponent(value))
+        }
+
+
+
+
+    9-5 searcHeader组件 
+
+        component里面新建SearchHeader文件夹
+        返回的按钮和输入框 可以直接引用
+
+        在search index.jsx页面里面 获取url参数 this.props.params 
+        然后传到子组件  <SearchHeader keyword={params}/>
+
+        在SearchHeader index.jsx页面里面 获取
+
+        返回事件 onClick={this.clickHandle.bind(this)}
+
+        clickHandle(value){
+            window.history.back()
+        }
+
+        然后布局样式
+
+
 
 ```
