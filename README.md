@@ -1881,15 +1881,64 @@
 
 ```
 
-第十章 
+第十章 开发详情
 
-    10-1
+    10-1 详情页面结构
 
-    10-2
-    10-3
-    10-4
-    10-5
+        header 信息页面  点评页面(上拉加载更多)
+        Detail 页面
+        component/List/Item 下面 引入Link 然后嵌套 <Link to={'/detail/' + data.id}></Link>
+        
+        containers/Detail/index.jsx 引入Header信息
+
+        import Header from '../../components/Header/index'
+        <Header title="商户详情"/>
+
+    10-2  商户信息模块
+
+        subpage
+        1.补充 mock/home/list.js 里面id的内容
+        2.mock新增detail文件夹 新增文件 info.js comment.js
+        3.在mock/server 文件夹里面新增接口
+        4.fetch/detail/detail 里面新增接口
+            export function getInfoData(id){
+                const result = get('/api/detail/info/' +id)
+                return result;
+            }
+
+            export function getCommentData(page, id) {
+                const result = get('/api/detail/comment/' + page + '/' +id)
+                return result 
+            }
+        
+
+        判断一个对象是否总是true 
+        var  a = false 
+        var  b = {}
+        !!a   // false
+        !!b   // true
+
+    10-3 detailInfo组件
+
+        detailIInfo页面 info.jsx页面中引入并传值
+        <DetailInfo data={ this.state.info }/>
+        <p dangerouslySetInnerHTML={{__html:data.desc}}></p>
+        dangerouslySetInnerHTML
+        xss攻击  在一些上传文件中如果写script 
+        <script>document.get</script> 
+        如果直接<p>{data.desc}</p> 没有问题 尖括号不识别
+
+        如果 <p dangerouslySetInnerHTML={{__html:data.desc}}></p>方式写。就会有问题。所以加上dangerouslySetInnerHTML进行处理
+
+    10-4 star组件
+    
+    10-5 用户评论列表 comment.jsx
+
+        传递id 布局页面     
+        列表循环遍历 然后列出电话 评分 一级描述信息
+        
 
 
 
-```
+
+````
