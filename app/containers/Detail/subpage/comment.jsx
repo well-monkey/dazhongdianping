@@ -19,7 +19,6 @@ class Comment extends React.Component{
     }
     render(){
         const _id = this.props.id
-        console.log(_id)
         return(
             <div className="detail-comment-subpage">
                 <h2>用户点评</h2>

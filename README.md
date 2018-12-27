@@ -1931,14 +1931,194 @@
         如果 <p dangerouslySetInnerHTML={{__html:data.desc}}></p>方式写。就会有问题。所以加上dangerouslySetInnerHTML进行处理
 
     10-4 star组件
-    
+        
+        render(){
+            // 获取 star 数量，并取余5（最多5个star）
+            let star = this.props.star || 0 
+            if(star>5){
+                star = star % 5
+            }
+            return(
+                <div className="star-container">
+                    {
+                        [1,2,3,4,5].map((item,index)=>{
+                            const lightClass = star >= item ? ' light' : ''
+                            return <i key={index} className={'icon-star' + lightClass}></i>
+                        })
+                    }
+                </div>
+            )
+        }
+
     10-5 用户评论列表 comment.jsx
 
         传递id 布局页面     
-        列表循环遍历 然后列出电话 评分 一级描述信息
+        列表循环遍历 然后列出电话 评分 一级描述信息 
+        和列表页面大致相同 
         
+        constructor(props,context){
+            super(props,context)
+            this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            this.state = {
+                data: [],
+                hasMore: false,
+                isLoadingMore: false,
+                page: 0
+            }
+        }
+        render(){
+            const _id = this.props.id
+            return(
+                <div className="detail-comment-subpage">
+                    <h2>用户点评</h2>
+                    {
+                        this.state.data.length
+                        ? <ListComponent data={this.state.data}/>
+                        : <div>{/* 加载中... */}</div>
+                    }
+                    {
+                        this.state.hasMore
+                        ? <LoadMore isLoadingMore={this.state.isLoadingMore} loadMoreFn={this.loadMoreData.bind(this)}/>
+                        : ''
+                    }
+                </div>
+            )
+        }
+        componentDidMount() {
+            this.loadFirstPageData();
+        }
+        // 获取首页数据
+        loadFirstPageData() {
+            const id = this.props.id
+            const result = getCommentData(0, id)
+            this.resultHandle(result)
+        }
+        // 加载更多数据
+        loadMoreData() {
+            // 记录状态
+            this.setState({
+                isLoadingMore: true
+            })
+            const id = this.props.id
+            const page = this.state.page
+            const result = getCommentData(page, id)
+            this.resultHandle(result)
 
-
-
+            // 增加 page 技术
+            this.setState({
+                isLoadingMore: false
+            })
+        }
+        // 处理数据
+        resultHandle(result) {
+            result.then(res => {
+                return res.json()
+            }).then(json => {
+                // 增加 page 技术
+                const page = this.state.page
+                this.setState({
+                    page: page + 1
+                })
+                const hasMore = json.hasMore
+                const data = json.data
+                this.setState({
+                    hasMore: hasMore,
+                    // 注意，这里讲最新获取的数据，拼接到原数据之后，使用 concat 函数
+                    data: this.state.data.concat(data)
+                })
+            }).catch(ex => {
+                if (__DEV__) {
+                    console.error('详情页获取用户评论数据出错, ', ex.message)
+                }
+            })
+        }
 
 ````
+
+```
+
+第十一章 登录页面 
+
+    class Login extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+            this.state = {
+                checking: true
+            }
+        }
+        render() {
+            return (
+                <div>
+                    <Header title="登录"/>
+                    {
+                        // 等待验证之后，再显示登录信息
+                        this.state.checking
+                        ? <div>{/* 等待中 */}</div>
+                        : <LoginComponent loginHandle={this.loginHandle.bind(this)}/>
+                    }
+                </div>
+            )
+        }
+        componentDidMount() {
+            // 判断是否已经登录
+            this.doCheck()
+        }
+        doCheck() {
+            const userinfo = this.props.userinfo
+            if (userinfo.username) {
+                // 已经登录，则跳转到用户主页
+                this.goUserPage();
+            } else {
+                // 未登录，则验证结束
+                this.setState({
+                    checking: false
+                })
+            }
+        }
+        // 处理登录之后的事情
+        loginHandle(username) {
+            // 保存用户名
+            const actions = this.props.userInfoActions
+            let userinfo = this.props.userinfo
+            userinfo.username = username
+            actions.update(userinfo)
+
+            const params = this.props.params
+            const router = params.router
+            if (router) {
+                // 跳转到指定的页面
+                hashHistory.push(router)
+            } else {
+                // 跳转到用户主页
+                this.goUserPage()
+            }
+        }
+        goUserPage() {
+            hashHistory.push('/User')
+        }
+    }
+
+```
+```
+
+第12章 
+
+    12-1 购买收藏按钮 buyAndStore
+
+        创建组件并且引入 然后购买和存储按钮分别建立各自时间
+
+    12-2 验证登录
+
+        首先进行验证登录的处理 先看一下id
+
+    12-3
+
+    12-4
+
+    12-5
+
+
+
+```
+
