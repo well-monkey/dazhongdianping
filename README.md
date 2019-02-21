@@ -2111,14 +2111,64 @@
     12-2 验证登录
 
         首先进行验证登录的处理 先看一下id
+        loginCheck(){
+            const id = this.props.id
+            const userinfo = this.props.userinfo
+            if(!userinfo.username){
+                hashHistory.push('Login/'+ encodeURICompomemt('/detail/' + id))
+                return false
+            }
+        }
 
-    12-3
+    12-3 12-4 12-5
 
-    12-4
+        配置store 
 
-    12-5
+```
+
+```
+第13章  用户主页
+    13-1    
+
+        处理一下header 组件  判断如果 有backRouter属性 则跳转相应 如果没有则返回上一级
+
+        import { hashHistory } from 'react-router'
+        clickHandle(){
+            const backRouter = this.props.backRouter
+            if(backRouter){
+                hashHistory.push(backRouter)
+            }else{
+                window.history.back()
+            }
+        }
+    13-2  userinfo组件
+
+    13-3 购买列表 orderList列表
+        render() {
+            const data = this.props.data
+            return (
+                <div>
+                    {data.map((item, index) => {
+                        return <Item key={index} data={item}/>
+                    })}
+                </div>
+            )
+        }
+    13-4 Item 组件 列表循环
+     
+```
 
 
 
 ```
+第14章  订单评价
 
+    14-1 
+
+    14-2
+
+    14-3
+
+    14-4
+    
+```
